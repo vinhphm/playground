@@ -58,7 +58,6 @@ function App() {
     [],
   );
 
-  // Combined memoization for both mappings
   const { groupMap, idToGroupMap } = useMemo(() => {
     const groupMap = new Map<number, Set<number>>();
     const idToGroupMap = new Map<number, number>();
