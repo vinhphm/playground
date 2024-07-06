@@ -4,12 +4,37 @@ import { Table } from "antd";
 export interface IItem {
   id: number;
   groupId: number;
+  prop1: string;
+  prop2: string;
+  prop3: string;
+  prop4: string;
+  prop5: string;
+  prop6: string;
+  prop7: string;
+  prop8: string;
 }
 
-// Simulating a large dataset
-const MOCK: IItem[] = Array.from({ length: 10000 }, (_, index) => ({
+// Function to generate random text
+const generateRandomText = () => {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  return Array.from({ length: 10 }, () =>
+    characters.charAt(Math.floor(Math.random() * characters.length)),
+  ).join("");
+};
+
+// Simulating a very large dataset with additional properties
+const MOCK: IItem[] = Array.from({ length: 50000 }, (_, index) => ({
   id: index + 1,
   groupId: Math.floor(index / 3) + 1,
+  prop1: generateRandomText(),
+  prop2: generateRandomText(),
+  prop3: generateRandomText(),
+  prop4: generateRandomText(),
+  prop5: generateRandomText(),
+  prop6: generateRandomText(),
+  prop7: generateRandomText(),
+  prop8: generateRandomText(),
 }));
 
 function App() {
@@ -17,18 +42,21 @@ function App() {
     new Set(),
   );
 
-  const columns = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-    },
-    {
-      title: "Group ID",
-      dataIndex: "groupId",
-      key: "groupId",
-    },
-  ];
+  const columns = useMemo(
+    () => [
+      { title: "ID", dataIndex: "id", key: "id" },
+      { title: "Group ID", dataIndex: "groupId", key: "groupId" },
+      { title: "Property 1", dataIndex: "prop1", key: "prop1" },
+      { title: "Property 2", dataIndex: "prop2", key: "prop2" },
+      { title: "Property 3", dataIndex: "prop3", key: "prop3" },
+      { title: "Property 4", dataIndex: "prop4", key: "prop4" },
+      { title: "Property 5", dataIndex: "prop5", key: "prop5" },
+      { title: "Property 6", dataIndex: "prop6", key: "prop6" },
+      { title: "Property 7", dataIndex: "prop7", key: "prop7" },
+      { title: "Property 8", dataIndex: "prop8", key: "prop8" },
+    ],
+    [],
+  );
 
   // Memoize the group mapping
   const groupMap = useMemo(() => {
@@ -90,7 +118,7 @@ function App() {
       pagination={{ pageSize: 10 }}
       rowSelection={rowSelection}
       virtual
-      scroll={{ y: 400 }}
+      scroll={{ y: 700 }}
     />
   );
 }
