@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, Key } from "react";
 import { Table } from "antd";
 
 export interface IItem {
@@ -78,7 +78,8 @@ function App() {
 
   const rowSelection = {
     selectedRowKeys: Array.from(selectedRowKeys),
-    onChange: onSelectChange,
+    onChange: (selectedRowKeys: Key[]) =>
+      onSelectChange(selectedRowKeys as number[]),
   };
 
   return (
