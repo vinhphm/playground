@@ -58,26 +58,25 @@ function App() {
     [],
   );
 
-  // Memoize the group mapping
-  const groupMap = useMemo(() => {
-    const map = new Map<number, Set<number>>();
-    MOCK.forEach((item) => {
-      if (!map.has(item.groupId)) {
-        map.set(item.groupId, new Set());
-      }
-      map.get(item.groupId)!.add(item.id);
-    });
-    return map;
-  }, []);
+  // Combined memoization for both mappings
+  const { groupMap, idToGroupMap } = useMemo(() => {
+    const groupMap = new Map<number, Set<number>>();
+    const idToGroupMap = new Map<number, number>();
 
-  // Memoize the reverse mapping (id to groupId)
-  const idToGroupMap = useMemo(() => {
-    const map = new Map<number, number>();
     MOCK.forEach((item) => {
-      map.set(item.id, item.groupId);
+      // Populate groupMap
+      if (!groupMap.has(item.groupId)) {
+        groupMap.set(item.groupId, new Set());
+      }
+      groupMap.get(item.groupId)!.add(item.id);
+
+      // Populate idToGroupMap
+      idToGroupMap.set(item.id, item.groupId);
     });
-    return map;
-  }, []);
+
+    return { groupMap, idToGroupMap };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [MOCK]);
 
   const onSelectChange = useCallback(
     (newSelectedRowKeys: number[]) => {
