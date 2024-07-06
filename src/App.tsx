@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Table } from "antd";
 
 export interface IItem {
@@ -6,31 +6,16 @@ export interface IItem {
   groupId: number;
 }
 
-const MOCK: IItem[] = [
-  { id: 1, groupId: 1 },
-  { id: 2, groupId: 1 },
-  { id: 3, groupId: 2 },
-  { id: 4, groupId: 2 },
-  { id: 5, groupId: 3 },
-  { id: 6, groupId: 3 },
-  { id: 7, groupId: 4 },
-  { id: 8, groupId: 4 },
-  { id: 9, groupId: 5 },
-  { id: 10, groupId: 5 },
-  { id: 11, groupId: 6 },
-  { id: 12, groupId: 6 },
-  { id: 13, groupId: 7 },
-  { id: 14, groupId: 7 },
-  { id: 15, groupId: 8 },
-  { id: 16, groupId: 8 },
-  { id: 17, groupId: 9 },
-  { id: 18, groupId: 9 },
-  { id: 19, groupId: 10 },
-  { id: 20, groupId: 10 },
-];
+// Simulating a large dataset
+const MOCK: IItem[] = Array.from({ length: 10000 }, (_, index) => ({
+  id: index + 1,
+  groupId: Math.floor(index / 10) + 1,
+}));
 
 function App() {
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<Set<number>>(
+    new Set(),
+  );
 
   const columns = [
     {
@@ -45,55 +30,54 @@ function App() {
     },
   ];
 
+  // Memoize the group mapping
+  const groupMap = useMemo(() => {
+    const map = new Map<number, Set<number>>();
+    MOCK.forEach((item) => {
+      if (!map.has(item.groupId)) {
+        map.set(item.groupId, new Set());
+      }
+      map.get(item.groupId)!.add(item.id);
+    });
+    return map;
+  }, []);
+
+  // Memoize the reverse mapping (id to groupId)
+  const idToGroupMap = useMemo(() => {
+    const map = new Map<number, number>();
+    MOCK.forEach((item) => {
+      map.set(item.id, item.groupId);
+    });
+    return map;
+  }, []);
+
   const onSelectChange = useCallback(
-    (newSelectedRowKeys: React.Key[]) => {
+    (newSelectedRowKeys: number[]) => {
+      const newSelectedSet = new Set(selectedRowKeys);
       const addedKeys = newSelectedRowKeys.filter(
-        (key) => !selectedRowKeys.includes(key),
+        (key) => !selectedRowKeys.has(key),
       );
-      const removedKeys = selectedRowKeys.filter(
+      const removedKeys = Array.from(selectedRowKeys).filter(
         (key) => !newSelectedRowKeys.includes(key),
       );
 
-      let updatedKeys: React.Key[];
-
       if (addedKeys.length > 0) {
         // Selection
-        const selectedItem = MOCK.find((item) => item.id === addedKeys[0]);
-        if (selectedItem) {
-          const groupItems = MOCK.filter(
-            (item) => item.groupId === selectedItem.groupId,
-          );
-          updatedKeys = [
-            ...new Set([
-              ...newSelectedRowKeys,
-              ...groupItems.map((item) => item.id),
-            ]),
-          ];
-        } else {
-          updatedKeys = newSelectedRowKeys;
-        }
+        const groupId = idToGroupMap.get(addedKeys[0])!;
+        groupMap.get(groupId)!.forEach((id) => newSelectedSet.add(id));
       } else if (removedKeys.length > 0) {
         // Deselection
-        const deselectedItem = MOCK.find((item) => item.id === removedKeys[0]);
-        if (deselectedItem) {
-          updatedKeys = newSelectedRowKeys.filter((key) => {
-            const item = MOCK.find((i) => i.id === key);
-            return item && item.groupId !== deselectedItem.groupId;
-          });
-        } else {
-          updatedKeys = newSelectedRowKeys;
-        }
-      } else {
-        updatedKeys = newSelectedRowKeys;
+        const groupId = idToGroupMap.get(removedKeys[0])!;
+        groupMap.get(groupId)!.forEach((id) => newSelectedSet.delete(id));
       }
 
-      setSelectedRowKeys(updatedKeys);
+      setSelectedRowKeys(newSelectedSet);
     },
-    [selectedRowKeys],
+    [selectedRowKeys, groupMap, idToGroupMap],
   );
 
   const rowSelection = {
-    selectedRowKeys,
+    selectedRowKeys: Array.from(selectedRowKeys),
     onChange: onSelectChange,
   };
 
@@ -102,8 +86,10 @@ function App() {
       rowKey="id"
       dataSource={MOCK}
       columns={columns}
-      pagination={false}
+      pagination={{ pageSize: 50 }}
       rowSelection={rowSelection}
+      virtual
+      scroll={{ y: 400 }}
     />
   );
 }
