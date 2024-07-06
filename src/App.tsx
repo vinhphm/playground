@@ -9,7 +9,7 @@ export interface IItem {
 // Simulating a large dataset
 const MOCK: IItem[] = Array.from({ length: 10000 }, (_, index) => ({
   id: index + 1,
-  groupId: Math.floor(index / 10) + 1,
+  groupId: Math.floor(index / 3) + 1,
 }));
 
 function App() {
@@ -86,7 +86,7 @@ function App() {
       rowKey="id"
       dataSource={MOCK}
       columns={columns}
-      pagination={{ pageSize: 50 }}
+      pagination={{ pageSize: 10 }}
       rowSelection={rowSelection}
       virtual
       scroll={{ y: 400 }}
