@@ -1,123 +1,304 @@
-import type { Key } from 'react'
-import { useCallback, useMemo, useState } from 'react'
-import { Table } from 'antd'
+import { useMemo, useReducer, useState } from 'react'
+import { Button, Input, Select, Space } from 'antd'
 
-export interface IItem {
-  id: number
-  groupId: number
-  prop1: string
-  prop2: string
-  prop3: string
-  prop4: string
-  prop5: string
-  prop6: string
-  prop7: string
-  prop8: string
-}
-
-// Function to generate random text
-function generateRandomText() {
-  const characters
-    = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  return Array.from({ length: 10 }, () =>
-    characters.charAt(Math.floor(Math.random() * characters.length))).join('')
-}
-
-// Simulating a very large dataset with additional properties
-const MOCK: IItem[] = Array.from({ length: 50000 }, (_, index) => ({
-  id: index + 1,
-  groupId: Math.floor(index / 3) + 1,
-  prop1: generateRandomText(),
-  prop2: generateRandomText(),
-  prop3: generateRandomText(),
-  prop4: generateRandomText(),
-  prop5: generateRandomText(),
-  prop6: generateRandomText(),
-  prop7: generateRandomText(),
-  prop8: generateRandomText(),
-}))
+import type {
+  ColumnDef,
+  GroupingState,
+} from '@tanstack/react-table'
+import {
+  flexRender,
+  getCoreRowModel,
+  getExpandedRowModel,
+  getFilteredRowModel,
+  getGroupedRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
+import {
+  DeploymentUnitOutlined,
+  DoubleLeftOutlined,
+  DoubleRightOutlined,
+  LeftOutlined,
+  MinusCircleOutlined,
+  PlusCircleOutlined,
+  RightOutlined,
+} from '@ant-design/icons'
+import type { Person } from './makeData'
+import { makeData } from './makeData'
 
 function App() {
-  const [selectedRowKeys, setSelectedRowKeys] = useState<Set<number>>(
-    new Set(),
-  )
+  const rerender = useReducer(() => ({}), {})[1]
 
-  const columns = useMemo(
+  const columns = useMemo<ColumnDef<Person>[]>(
     () => [
-      { title: 'ID', dataIndex: 'id', key: 'id' },
-      { title: 'Group ID', dataIndex: 'groupId', key: 'groupId' },
-      { title: 'Property 1', dataIndex: 'prop1', key: 'prop1' },
-      { title: 'Property 2', dataIndex: 'prop2', key: 'prop2' },
-      { title: 'Property 3', dataIndex: 'prop3', key: 'prop3' },
-      { title: 'Property 4', dataIndex: 'prop4', key: 'prop4' },
-      { title: 'Property 5', dataIndex: 'prop5', key: 'prop5' },
-      { title: 'Property 6', dataIndex: 'prop6', key: 'prop6' },
-      { title: 'Property 7', dataIndex: 'prop7', key: 'prop7' },
-      { title: 'Property 8', dataIndex: 'prop8', key: 'prop8' },
+      {
+        header: 'Name',
+        columns: [
+          {
+            accessorKey: 'firstName',
+            header: 'First Name',
+            cell: info => info.getValue(),
+            /**
+             * override the value used for row grouping
+             * (otherwise, defaults to the value derived from accessorKey / accessorFn)
+             */
+            getGroupingValue: row => `${row.firstName} ${row.lastName}`,
+          },
+          {
+            accessorFn: row => row.lastName,
+            id: 'lastName',
+            header: () => <span>Last Name</span>,
+            cell: info => info.getValue(),
+          },
+        ],
+      },
+      {
+        header: 'Info',
+        columns: [
+          {
+            accessorKey: 'age',
+            header: () => 'Age',
+            aggregatedCell: ({ getValue }) =>
+              Math.round(getValue<number>() * 100) / 100,
+            aggregationFn: 'median',
+          },
+          {
+            header: 'More Info',
+            columns: [
+              {
+                accessorKey: 'visits',
+                header: () => <span>Visits</span>,
+                aggregationFn: 'sum',
+                // aggregatedCell: ({ getValue }) => getValue().toLocaleString(),
+              },
+              {
+                accessorKey: 'status',
+                header: 'Status',
+              },
+              {
+                accessorKey: 'progress',
+                header: 'Profile Progress',
+                cell: ({ getValue }) =>
+                  `${Math.round(getValue<number>() * 100) / 100}%`,
+                aggregationFn: 'mean',
+                aggregatedCell: ({ getValue }) =>
+                  `${Math.round(getValue<number>() * 100) / 100}%`,
+              },
+            ],
+          },
+        ],
+      },
     ],
     [],
   )
 
-  const { groupMap, idToGroupMap } = useMemo(() => {
-    const groupMap = new Map<number, Set<number>>()
-    const idToGroupMap = new Map<number, number>()
+  const [data, setData] = useState(() => makeData(100000))
+  const refreshData = () => setData(() => makeData(100000))
 
-    MOCK.forEach((item) => {
-      // Populate groupMap
-      if (!groupMap.has(item.groupId)) {
-        groupMap.set(item.groupId, new Set())
-      }
-      groupMap.get(item.groupId)!.add(item.id)
+  const [grouping, setGrouping] = useState<GroupingState>([])
 
-      // Populate idToGroupMap
-      idToGroupMap.set(item.id, item.groupId)
-    })
-
-    return { groupMap, idToGroupMap }
-  }, [MOCK])
-
-  const onSelectChange = useCallback(
-    (newSelectedRowKeys: number[]) => {
-      const newSelectedSet = new Set(selectedRowKeys)
-      const addedKeys = newSelectedRowKeys.filter(
-        key => !selectedRowKeys.has(key),
-      )
-      const removedKeys = Array.from(selectedRowKeys).filter(
-        key => !newSelectedRowKeys.includes(key),
-      )
-
-      if (addedKeys.length > 0) {
-        // Selection
-        const groupId = idToGroupMap.get(addedKeys[0])!
-        groupMap.get(groupId)!.forEach(id => newSelectedSet.add(id))
-      }
-      else if (removedKeys.length > 0) {
-        // Deselection
-        const groupId = idToGroupMap.get(removedKeys[0])!
-        groupMap.get(groupId)!.forEach(id => newSelectedSet.delete(id))
-      }
-
-      setSelectedRowKeys(newSelectedSet)
+  const table = useReactTable({
+    data,
+    columns,
+    state: {
+      grouping,
     },
-    [selectedRowKeys, groupMap, idToGroupMap],
-  )
-
-  const rowSelection = {
-    selectedRowKeys: Array.from(selectedRowKeys),
-    onChange: (selectedRowKeys: Key[]) =>
-      onSelectChange(selectedRowKeys as number[]),
-  }
+    onGroupingChange: setGrouping,
+    getExpandedRowModel: getExpandedRowModel(),
+    getGroupedRowModel: getGroupedRowModel(),
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    debugTable: true,
+  })
 
   return (
-    <Table
-      rowKey="id"
-      dataSource={MOCK}
-      columns={columns}
-      pagination={{ pageSize: 10 }}
-      rowSelection={rowSelection}
-      virtual
-      scroll={{ y: 700 }}
-    />
+    <div className="p-2">
+      <div className="h-2" />
+      <table className="table">
+        <thead>
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <th key={header.id} colSpan={header.colSpan}>
+                    {header.isPlaceholder ? null : (
+                      <div>
+                        {header.column.getCanGroup() ? (
+                        // If the header can be grouped, let's add a toggle
+                          <Button
+                            type="text"
+                            icon={(
+                              <DeploymentUnitOutlined style={{
+                                color: header.column.getIsGrouped() ? '#0aff00' : '',
+                              }}
+                              />
+                            )}
+                            {...{
+                              onClick: header.column.getToggleGroupingHandler(),
+                              style: {
+                                cursor: 'pointer',
+                              },
+                            }}
+                          >
+                            {header.column.getIsGrouped()
+                              ? `(${header.column.getGroupedIndex()}) `
+                              : ``}
+                          </Button>
+                        ) : null}
+                        {' '}
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                      </div>
+                    )}
+                  </th>
+                )
+              })}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => {
+            return (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => {
+                  return (
+                    <td
+                      {...{
+                        key: cell.id,
+                        style: {
+                          background: cell.getIsGrouped()
+                            ? '#0aff0082'
+                            : cell.getIsPlaceholder()
+                              ? 'oklch(var(--b2))'
+                              : 'white',
+                          fontWeight: cell.getIsAggregated() ? 'bold' : 'normal',
+                        },
+                      }}
+                    >
+                      {cell.getIsGrouped() ? (
+                      // If it's a grouped cell, add an expander and row count
+                        <>
+                          <Button
+                            type="text"
+                            size="small"
+                            icon={row.getIsExpanded() ? <MinusCircleOutlined /> : <PlusCircleOutlined />}
+                            {...{
+                              onClick: row.getToggleExpandedHandler(),
+                              style: {
+                                cursor: row.getCanExpand()
+                                  ? 'pointer'
+                                  : 'normal',
+                              },
+                            }}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                            {' '}
+                            (
+                            {row.subRows.length}
+                            )
+                          </Button>
+                        </>
+                      ) : cell.getIsAggregated() ? (
+                      // If the cell is aggregated, use the Aggregated
+                      // renderer for cell
+                        flexRender(
+                          cell.column.columnDef.aggregatedCell
+                          ?? cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )
+                      ) : cell.getIsPlaceholder() ? null : ( // For cells with repeated values, render null
+                      // Otherwise, just render the regular cell
+                        flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )
+                      )}
+                    </td>
+                  )
+                })}
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+      <div className="h-2" />
+      <Space className="flex items-center gap-2">
+        <Button
+          onClick={() => table.setPageIndex(0)}
+          icon={<DoubleLeftOutlined />}
+          disabled={!table.getCanPreviousPage()}
+        />
+        <Button
+          onClick={() => table.previousPage()}
+          icon={<LeftOutlined />}
+          disabled={!table.getCanPreviousPage()}
+        />
+        <Button
+          onClick={() => table.nextPage()}
+          icon={<RightOutlined />}
+          disabled={!table.getCanNextPage()}
+        />
+        <Button
+          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+          icon={<DoubleRightOutlined />}
+          disabled={!table.getCanNextPage()}
+        />
+        <Space>
+          <div>Page</div>
+          <strong>
+            {table.getState().pagination.pageIndex + 1}
+            {' '}
+            of
+            {' '}
+            {table.getPageCount()}
+          </strong>
+        </Space>
+        <Space>
+          | Go to page:
+          <Input
+            type="number"
+            min="1"
+            max={table.getPageCount()}
+            defaultValue={table.getState().pagination.pageIndex + 1}
+            onChange={(e) => {
+              const page = e.target.value ? Number(e.target.value) - 1 : 0
+              table.setPageIndex(page)
+            }}
+          />
+        </Space>
+        <Select
+          value={table.getState().pagination.pageSize}
+          onChange={(value) => {
+            table.setPageSize(Number(value))
+          }}
+          options={[10, 20, 30, 40, 50].map(pageSize => ({
+            label: `Show ${pageSize}`,
+            value: pageSize,
+          }))}
+          style={
+            {
+              width: '100px',
+            }
+          }
+        />
+      </Space>
+      <div>
+        {table.getRowModel().rows.length}
+        {' '}
+        Rows
+      </div>
+      <Space>
+        <Button onClick={() => rerender()}>Force Rerender</Button>
+        <Button onClick={() => refreshData()}>Refresh Data</Button>
+      </Space>
+      <pre>{JSON.stringify(grouping, null, 2)}</pre>
+    </div>
   )
 }
 
