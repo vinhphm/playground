@@ -1,5 +1,4 @@
 import { useMemo, useReducer, useState } from 'react'
-import { Button, Input, Select, Space } from 'antd'
 
 import type {
   ColumnDef,
@@ -28,6 +27,13 @@ import { makeData } from './makeData'
 
 function App() {
   const rerender = useReducer(() => ({}), {})[1]
+  const [theme, _setTheme] = useState<'light' | 'dark'>(
+    (
+      window.matchMedia
+      && window.matchMedia('(prefers-color-scheme: dark)').matches
+    )
+      ? 'dark' : 'light',
+  )
 
   const columns = useMemo<ColumnDef<Person>[]>(
     () => [
@@ -113,8 +119,49 @@ function App() {
   })
 
   return (
-    <div className="p-2">
-      <div className="h-2" />
+    <div className="p-4 flex gap-3 flex-col">
+      <div className="px-4 max-w-full prose flex justify-between">
+        <h1 className="text-2xl">Table with Grouping</h1>
+        <div>
+          <label className="flex cursor-pointer gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <input
+              type="checkbox"
+              value="light"
+              defaultChecked={theme === 'light'}
+              className="toggle theme-controller"
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="5" />
+              <path
+                d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"
+              />
+            </svg>
+          </label>
+        </div>
+      </div>
       <table className="table">
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
@@ -123,28 +170,31 @@ function App() {
                 return (
                   <th key={header.id} colSpan={header.colSpan}>
                     {header.isPlaceholder ? null : (
-                      <div>
+                      <div className="flex items-center gap-2">
                         {header.column.getCanGroup() ? (
                         // If the header can be grouped, let's add a toggle
-                          <Button
-                            type="text"
-                            icon={(
+                          <div
+                            className="tooltip"
+                            data-tip={header.column.getIsGrouped() ? 'Ungroup' : 'Group'}
+                          >
+                            <button
+                              className="btn btn-ghost btn-sm"
+                              {...{
+                                onClick: header.column.getToggleGroupingHandler(),
+                                style: {
+                                  cursor: 'pointer',
+                                },
+                              }}
+                            >
                               <DeploymentUnitOutlined style={{
                                 color: header.column.getIsGrouped() ? '#0aff00' : '',
                               }}
                               />
-                            )}
-                            {...{
-                              onClick: header.column.getToggleGroupingHandler(),
-                              style: {
-                                cursor: 'pointer',
-                              },
-                            }}
-                          >
-                            {header.column.getIsGrouped()
-                              ? `(${header.column.getGroupedIndex()}) `
-                              : ``}
-                          </Button>
+                              {header.column.getIsGrouped()
+                                ? `(${header.column.getGroupedIndex()}) `
+                                : ``}
+                            </button>
+                          </div>
                         ) : null}
                         {' '}
                         {flexRender(
@@ -170,10 +220,10 @@ function App() {
                         key: cell.id,
                         style: {
                           background: cell.getIsGrouped()
-                            ? '#0aff0082'
+                            ? '#0aff0050'
                             : cell.getIsPlaceholder()
                               ? 'oklch(var(--b2))'
-                              : 'white',
+                              : 'transparent',
                           fontWeight: cell.getIsAggregated() ? 'bold' : 'normal',
                         },
                       }}
@@ -181,10 +231,8 @@ function App() {
                       {cell.getIsGrouped() ? (
                       // If it's a grouped cell, add an expander and row count
                         <>
-                          <Button
-                            type="text"
-                            size="small"
-                            icon={row.getIsExpanded() ? <MinusCircleOutlined /> : <PlusCircleOutlined />}
+                          <button
+                            className="btn btn-ghost btn-sm"
                             {...{
                               onClick: row.getToggleExpandedHandler(),
                               style: {
@@ -194,6 +242,7 @@ function App() {
                               },
                             }}
                           >
+                            {row.getIsExpanded() ? <MinusCircleOutlined /> : <PlusCircleOutlined />}
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext(),
@@ -202,7 +251,7 @@ function App() {
                             (
                             {row.subRows.length}
                             )
-                          </Button>
+                          </button>
                         </>
                       ) : cell.getIsAggregated() ? (
                       // If the cell is aggregated, use the Aggregated
@@ -227,29 +276,36 @@ function App() {
           })}
         </tbody>
       </table>
-      <div className="h-2" />
-      <Space className="flex items-center gap-2">
-        <Button
+      <div className="flex items-center gap-2">
+        <button
+          className="btn btn-sm"
           onClick={() => table.setPageIndex(0)}
-          icon={<DoubleLeftOutlined />}
           disabled={!table.getCanPreviousPage()}
-        />
-        <Button
+        >
+          <DoubleLeftOutlined />
+        </button>
+        <button
+          className="btn btn-sm"
           onClick={() => table.previousPage()}
-          icon={<LeftOutlined />}
           disabled={!table.getCanPreviousPage()}
-        />
-        <Button
+        >
+          <LeftOutlined />
+        </button>
+        <button
+          className="btn btn-sm"
           onClick={() => table.nextPage()}
-          icon={<RightOutlined />}
           disabled={!table.getCanNextPage()}
-        />
-        <Button
+        >
+          <RightOutlined />
+        </button>
+        <button
+          className="btn btn-sm"
           onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-          icon={<DoubleRightOutlined />}
           disabled={!table.getCanNextPage()}
-        />
-        <Space>
+        >
+          <DoubleRightOutlined />
+        </button>
+        <div className="flex items-center gap-2">
           <div>Page</div>
           <strong>
             {table.getState().pagination.pageIndex + 1}
@@ -258,10 +314,11 @@ function App() {
             {' '}
             {table.getPageCount()}
           </strong>
-        </Space>
-        <Space>
+        </div>
+        <div className="flex items-center gap-2">
           | Go to page:
-          <Input
+          <input
+            className="input input-bordered input-sm"
             type="number"
             min="1"
             max={table.getPageCount()}
@@ -271,33 +328,40 @@ function App() {
               table.setPageIndex(page)
             }}
           />
-        </Space>
-        <Select
+        </div>
+        <select
+          className="select select-sm select-bordered"
           value={table.getState().pagination.pageSize}
-          onChange={(value) => {
-            table.setPageSize(Number(value))
+          onChange={(e) => {
+            table.setPageSize(Number(e.target.value))
           }}
-          options={[10, 20, 30, 40, 50].map(pageSize => ({
-            label: `Show ${pageSize}`,
-            value: pageSize,
-          }))}
           style={
             {
               width: '100px',
             }
           }
-        />
-      </Space>
+        >
+          {[10, 20, 30, 40, 50].map(pageSize => (
+            <option key={pageSize} value={pageSize}>
+              Show
+              {' '}
+              {pageSize}
+            </option>
+          ))}
+        </select>
+      </div>
       <div>
         {table.getRowModel().rows.length}
         {' '}
         Rows
       </div>
-      <Space>
-        <Button onClick={() => rerender()}>Force Rerender</Button>
-        <Button onClick={() => refreshData()}>Refresh Data</Button>
-      </Space>
-      <pre>{JSON.stringify(grouping, null, 2)}</pre>
+      <div className="flex items-center gap-2">
+        <button className="btn btn-sm" onClick={() => rerender()}>Force Rerender</button>
+        <button className="btn btn-sm" onClick={() => refreshData()}>Refresh Data</button>
+      </div>
+      <div className="prose max-w-full">
+        <pre>{JSON.stringify(grouping, null, 2)}</pre>
+      </div>
     </div>
   )
 }
