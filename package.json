@@ -15,7 +15,8 @@
     "@tanstack/react-table": "^8.20.1",
     "antd": "^5.20.1",
     "react": "^19.0.0-rc-f38c22b244-20240704",
-    "react-dom": "^19.0.0-rc-f38c22b244-20240704"
+    "react-dom": "^19.0.0-rc-f38c22b244-20240704",
+    "theme-change": "^2.5.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.25.1",

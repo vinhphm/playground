@@ -1,4 +1,5 @@
-import { useMemo, useReducer, useState } from 'react'
+import { useEffect, useMemo, useReducer, useState } from 'react'
+import { themeChange } from 'theme-change'
 
 import type {
   ColumnDef,
@@ -27,13 +28,20 @@ import { makeData } from './makeData'
 
 function App() {
   const rerender = useReducer(() => ({}), {})[1]
-  const [theme, _setTheme] = useState<'light' | 'dark'>(
-    (
-      window.matchMedia
-      && window.matchMedia('(prefers-color-scheme: dark)').matches
-    )
-      ? 'dark' : 'light',
-  )
+  const initialTheme = window.localStorage.getItem("theme") || "light";
+  const [theme, setTheme] = useState(initialTheme);
+
+  const handleThemeChange = () => {
+    const currentTheme = window.localStorage.getItem("theme");
+    currentTheme === "dark" ? setTheme("dark") : setTheme("light");
+  };
+
+  useEffect(() => {
+    themeChange(false);
+    return () => {
+      themeChange(false);
+    };
+  }, []);
 
   const columns = useMemo<ColumnDef<Person>[]>(
     () => [
@@ -124,41 +132,42 @@ function App() {
         <h1 className="text-2xl">Table with Grouping</h1>
         <div>
           <label className="flex cursor-pointer gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <button
+              data-toggle-theme="dark,light"
+              onClick={handleThemeChange}
+              className="btn btn-ghost"
             >
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-            <input
-              type="checkbox"
-              value="light"
-              defaultChecked={theme === 'light'}
-              className="toggle theme-controller"
-            />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="5" />
-              <path
-                d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"
-              />
-            </svg>
+              {theme === "light" ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="5" />
+                  <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
+                </svg>
+              )}
+            </button>
           </label>
         </div>
       </div>
@@ -172,7 +181,6 @@ function App() {
                     {header.isPlaceholder ? null : (
                       <div className="flex items-center gap-2">
                         {header.column.getCanGroup() ? (
-                        // If the header can be grouped, let's add a toggle
                           <div
                             className="tooltip"
                             data-tip={header.column.getIsGrouped() ? 'Ungroup' : 'Group'}
@@ -229,7 +237,6 @@ function App() {
                       }}
                     >
                       {cell.getIsGrouped() ? (
-                      // If it's a grouped cell, add an expander and row count
                         <>
                           <button
                             className="btn btn-ghost btn-sm"
@@ -254,15 +261,12 @@ function App() {
                           </button>
                         </>
                       ) : cell.getIsAggregated() ? (
-                      // If the cell is aggregated, use the Aggregated
-                      // renderer for cell
                         flexRender(
                           cell.column.columnDef.aggregatedCell
                           ?? cell.column.columnDef.cell,
                           cell.getContext(),
                         )
-                      ) : cell.getIsPlaceholder() ? null : ( // For cells with repeated values, render null
-                      // Otherwise, just render the regular cell
+                      ) : cell.getIsPlaceholder() ? null : (
                         flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),
