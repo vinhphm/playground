@@ -11,8 +11,8 @@ export default {
     require('@tailwindcss/typography'),
     require('daisyui'),
   ],
-  darkMode: ["class", '[data-theme="dark"]'],
+  darkMode: ['class', '[data-theme="dark"]'],
   daisyui: {
-    themes: ["light", "dark"],
+    themes: ['light', 'dark'],
   },
 }

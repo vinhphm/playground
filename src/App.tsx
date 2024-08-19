@@ -28,20 +28,20 @@ import { makeData } from './makeData'
 
 function App() {
   const rerender = useReducer(() => ({}), {})[1]
-  const initialTheme = window.localStorage.getItem("theme") || "light";
-  const [theme, setTheme] = useState(initialTheme);
+  const initialTheme = window.localStorage.getItem('theme') || 'light'
+  const [theme, setTheme] = useState(initialTheme)
 
   const handleThemeChange = () => {
-    const currentTheme = window.localStorage.getItem("theme");
-    currentTheme === "dark" ? setTheme("dark") : setTheme("light");
-  };
+    const currentTheme = window.localStorage.getItem('theme')
+    setTheme(currentTheme === 'dark' ? 'dark' : 'light')
+  }
 
   useEffect(() => {
-    themeChange(false);
+    themeChange(false)
     return () => {
-      themeChange(false);
-    };
-  }, []);
+      themeChange(false)
+    }
+  }, [])
 
   const columns = useMemo<ColumnDef<Person>[]>(
     () => [
@@ -132,12 +132,12 @@ function App() {
         <h1 className="text-2xl">Table with Grouping</h1>
         <div>
           <label className="flex cursor-pointer gap-2">
-          <button
+            <button
               data-toggle-theme="dark,light"
               onClick={handleThemeChange}
               className="btn btn-ghost"
             >
-              {theme === "light" ? (
+              {theme === 'light' ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"
