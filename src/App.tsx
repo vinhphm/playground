@@ -1,19 +1,9 @@
-import { useEffect, useMemo, useReducer, useState } from 'react'
-import { themeChange } from 'theme-change'
-
 import type {
   ColumnDef,
   GroupingState,
 } from '@tanstack/react-table'
-import {
-  flexRender,
-  getCoreRowModel,
-  getExpandedRowModel,
-  getFilteredRowModel,
-  getGroupedRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
+import type { Person } from './makeData'
+
 import {
   DeploymentUnitOutlined,
   DoubleLeftOutlined,
@@ -23,7 +13,17 @@ import {
   PlusCircleOutlined,
   RightOutlined,
 } from '@ant-design/icons'
-import type { Person } from './makeData'
+import {
+  flexRender,
+  getCoreRowModel,
+  getExpandedRowModel,
+  getFilteredRowModel,
+  getGroupedRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
+import { useEffect, useMemo, useReducer, useState } from 'react'
+import { themeChange } from 'theme-change'
 import { makeData } from './makeData'
 
 function App() {
