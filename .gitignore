@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# TanStack Start generated files
+app.config.timestamp_*.js
+.nitro/
+.output/
+.tanstack/

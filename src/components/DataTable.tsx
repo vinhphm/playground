@@ -1,0 +1,315 @@
+import { useMemo, useReducer, useState } from 'react'
+
+import type {
+  ColumnDef,
+  GroupingState,
+} from '@tanstack/react-table'
+import {
+  flexRender,
+  getCoreRowModel,
+  getExpandedRowModel,
+  getFilteredRowModel,
+  getGroupedRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
+import {
+  DeploymentUnitOutlined,
+  DoubleLeftOutlined,
+  DoubleRightOutlined,
+  LeftOutlined,
+  MinusCircleOutlined,
+  PlusCircleOutlined,
+  RightOutlined,
+} from '@ant-design/icons'
+import type { Person } from '../utils/makeData'
+import { makeData } from '../utils/makeData'
+
+export function DataTable() {
+  const rerender = useReducer(() => ({}), {})[1]
+
+  const columns = useMemo<ColumnDef<Person>[]>(
+    () => [
+      {
+        header: 'Name',
+        columns: [
+          {
+            accessorKey: 'firstName',
+            header: 'First Name',
+            cell: info => info.getValue(),
+            getGroupingValue: row => `${row.firstName} ${row.lastName}`,
+          },
+          {
+            accessorFn: row => row.lastName,
+            id: 'lastName',
+            header: () => <span>Last Name</span>,
+            cell: info => info.getValue(),
+          },
+        ],
+      },
+      {
+        header: 'Info',
+        columns: [
+          {
+            accessorKey: 'age',
+            header: () => 'Age',
+            aggregatedCell: ({ getValue }) =>
+              Math.round(getValue<number>() * 100) / 100,
+            aggregationFn: 'median',
+          },
+          {
+            header: 'More Info',
+            columns: [
+              {
+                accessorKey: 'visits',
+                header: () => <span>Visits</span>,
+                aggregationFn: 'sum',
+              },
+              {
+                accessorKey: 'status',
+                header: 'Status',
+              },
+              {
+                accessorKey: 'progress',
+                header: 'Profile Progress',
+                cell: ({ getValue }) =>
+                  `${Math.round(getValue<number>() * 100) / 100}%`,
+                aggregationFn: 'mean',
+                aggregatedCell: ({ getValue }) =>
+                  `${Math.round(getValue<number>() * 100) / 100}%`,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    [],
+  )
+
+  const [data, setData] = useState(() => makeData(100000))
+  const refreshData = () => setData(() => makeData(100000))
+
+  const [grouping, setGrouping] = useState<GroupingState>([])
+
+  const table = useReactTable({
+    data,
+    columns,
+    state: {
+      grouping,
+    },
+    onGroupingChange: setGrouping,
+    getExpandedRowModel: getExpandedRowModel(),
+    getGroupedRowModel: getGroupedRowModel(),
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    debugTable: true,
+  })
+
+  return (
+    <div className="space-y-6">
+      <div className="prose max-w-none">
+        <h1>Advanced Data Table</h1>
+        <p>Interactive table with grouping, pagination, and real-time data manipulation.</p>
+      </div>
+      
+      <div className="card bg-base-100 shadow-xl">
+        <div className="card-body">
+          <div className="overflow-x-auto">
+            <table className="table">
+              <thead>
+                {table.getHeaderGroups().map(headerGroup => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <th key={header.id} colSpan={header.colSpan}>
+                          {header.isPlaceholder ? null : (
+                            <div className="flex items-center gap-2">
+                              {header.column.getCanGroup() ? (
+                                <div
+                                  className="tooltip"
+                                  data-tip={header.column.getIsGrouped() ? 'Ungroup' : 'Group'}
+                                >
+                                  <button
+                                    className="btn btn-ghost btn-sm"
+                                    {...{
+                                      onClick: header.column.getToggleGroupingHandler(),
+                                      style: {
+                                        cursor: 'pointer',
+                                      },
+                                    }}
+                                  >
+                                    <DeploymentUnitOutlined className={header.column.getIsGrouped() ? 'text-success' : ''} />
+                                    {header.column.getIsGrouped()
+                                      ? `(${header.column.getGroupedIndex()}) `
+                                      : ``}
+                                  </button>
+                                </div>
+                              ) : null}
+                              {' '}
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                            </div>
+                          )}
+                        </th>
+                      )
+                    })}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.map((row) => {
+                  return (
+                    <tr key={row.id}>
+                      {row.getVisibleCells().map((cell) => {
+                        return (
+                          <td
+                            key={cell.id}
+                            className={`${cell.getIsGrouped() ? 'bg-success/20' : cell.getIsPlaceholder() ? 'bg-base-200' : ''} ${cell.getIsAggregated() ? 'font-bold' : ''}`}
+                          >
+                            {cell.getIsGrouped() ? (
+                              <>
+                                <button
+                                  className="btn btn-ghost btn-sm"
+                                  {...{
+                                    onClick: row.getToggleExpandedHandler(),
+                                    style: {
+                                      cursor: row.getCanExpand()
+                                        ? 'pointer'
+                                        : 'normal',
+                                    },
+                                  }}
+                                >
+                                  {row.getIsExpanded() ? <MinusCircleOutlined /> : <PlusCircleOutlined />}
+                                  {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext(),
+                                  )}
+                                  {' '}
+                                  (
+                                  {row.subRows.length}
+                                  )
+                                </button>
+                              </>
+                            ) : cell.getIsAggregated() ? (
+                              flexRender(
+                                cell.column.columnDef.aggregatedCell
+                                ?? cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )
+                            ) : cell.getIsPlaceholder() ? null : (
+                              flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )
+                            )}
+                          </td>
+                        )
+                      })}
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+          
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-2">
+              <button
+                className="btn btn-sm"
+                onClick={() => table.setPageIndex(0)}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <DoubleLeftOutlined />
+              </button>
+              <button
+                className="btn btn-sm"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <LeftOutlined />
+              </button>
+              <button
+                className="btn btn-sm"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                <RightOutlined />
+              </button>
+              <button
+                className="btn btn-sm"
+                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                disabled={!table.getCanNextPage()}
+              >
+                <DoubleRightOutlined />
+              </button>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <div>Page</div>
+              <strong>
+                {table.getState().pagination.pageIndex + 1}
+                {' '}
+                of
+                {' '}
+                {table.getPageCount()}
+              </strong>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              | Go to page:
+              <input
+                className="input input-bordered input-sm w-20"
+                type="number"
+                min="1"
+                max={table.getPageCount()}
+                defaultValue={table.getState().pagination.pageIndex + 1}
+                onChange={(e) => {
+                  const page = e.target.value ? Number(e.target.value) - 1 : 0
+                  table.setPageIndex(page)
+                }}
+              />
+            </div>
+            
+            <select
+              className="select select-sm select-bordered w-32"
+              value={table.getState().pagination.pageSize}
+              onChange={(e) => {
+                table.setPageSize(Number(e.target.value))
+              }}
+            >
+              {[10, 20, 30, 40, 50].map(pageSize => (
+                <option key={pageSize} value={pageSize}>
+                  Show {pageSize}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <div className="text-sm">
+              {table.getRowModel().rows.length} Rows
+            </div>
+            <div className="flex items-center gap-2">
+              <button className="btn btn-sm btn-outline" onClick={() => rerender()}>Force Rerender</button>
+              <button className="btn btn-sm btn-primary" onClick={() => refreshData()}>Refresh Data</button>
+            </div>
+          </div>
+          
+          <div className="prose max-w-full">
+            <details className="collapse collapse-arrow bg-base-200">
+              <summary className="collapse-title text-lg font-medium">
+                Current Grouping State
+              </summary>
+              <div className="collapse-content">
+                <pre className="text-sm">{JSON.stringify(grouping, null, 2)}</pre>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
