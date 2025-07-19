@@ -1,11 +1,11 @@
-import { Link } from '@tanstack/react-router'
 import {
   BarChartOutlined,
   DashboardOutlined,
-  TableOutlined,
   SettingOutlined,
+  TableOutlined,
   UserOutlined,
 } from '@ant-design/icons'
+import { Link } from '@tanstack/react-router'
 
 export function Sidebar() {
   return (
@@ -15,10 +15,10 @@ export function Sidebar() {
         <div className="mb-6">
           <h2 className="text-lg font-semibold text-base-content">Navigation</h2>
         </div>
-        
+
         <ul className="menu w-full">
           <li>
-            <Link 
+            <Link
               to="/"
               className="[&.active]:bg-primary [&.active]:text-primary-content"
             >
@@ -26,9 +26,9 @@ export function Sidebar() {
               Dashboard
             </Link>
           </li>
-          
+
           <li>
-            <Link 
+            <Link
               to="/tables"
               className="[&.active]:bg-primary [&.active]:text-primary-content"
             >
@@ -36,9 +36,9 @@ export function Sidebar() {
               Data Tables
             </Link>
           </li>
-          
+
           <li>
-            <Link 
+            <Link
               to="/analytics"
               className="[&.active]:bg-primary [&.active]:text-primary-content"
             >
@@ -46,9 +46,9 @@ export function Sidebar() {
               Analytics
             </Link>
           </li>
-          
+
           <li>
-            <Link 
+            <Link
               to="/users"
               className="[&.active]:bg-primary [&.active]:text-primary-content"
             >
@@ -56,9 +56,9 @@ export function Sidebar() {
               Users
             </Link>
           </li>
-          
+
           <li>
-            <Link 
+            <Link
               to="/settings"
               className="[&.active]:bg-primary [&.active]:text-primary-content"
             >

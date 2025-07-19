@@ -11,7 +11,7 @@ function SettingsPage() {
         <h1>Settings</h1>
         <p>Configure your application preferences and settings.</p>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
@@ -39,7 +39,7 @@ function SettingsPage() {
             </div>
           </div>
         </div>
-        
+
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Preferences</h2>
@@ -78,7 +78,7 @@ function SettingsPage() {
             </div>
           </div>
         </div>
-        
+
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Security</h2>
@@ -105,7 +105,7 @@ function SettingsPage() {
             </div>
           </div>
         </div>
-        
+
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Danger Zone</h2>

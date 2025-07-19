@@ -1,6 +1,6 @@
+import { Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { themeChange } from 'theme-change'
-import { Link } from '@tanstack/react-router'
 
 export function Header() {
   const initialTheme = typeof window !== 'undefined' ? window.localStorage.getItem('theme') || 'light' : 'light'

@@ -11,7 +11,7 @@ function AnalyticsPage() {
         <h1>Analytics Dashboard</h1>
         <p>Real-time analytics and insights for your application.</p>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
@@ -21,7 +21,7 @@ function AnalyticsPage() {
             </div>
           </div>
         </div>
-        
+
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">User Engagement</h2>
@@ -30,7 +30,7 @@ function AnalyticsPage() {
             </div>
           </div>
         </div>
-        
+
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Revenue Trends</h2>
@@ -39,7 +39,7 @@ function AnalyticsPage() {
             </div>
           </div>
         </div>
-        
+
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Performance Metrics</h2>

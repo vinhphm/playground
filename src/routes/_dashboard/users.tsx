@@ -11,14 +11,14 @@ function UsersPage() {
         <h1>User Management</h1>
         <p>Manage users, roles, and permissions.</p>
       </div>
-      
+
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
           <div className="flex justify-between items-center mb-4">
             <h2 className="card-title">All Users</h2>
             <button className="btn btn-primary">Add User</button>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="table">
               <thead>

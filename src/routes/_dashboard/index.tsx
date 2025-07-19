@@ -11,7 +11,7 @@ function DashboardHome() {
         <h1>Dashboard Overview</h1>
         <p>Welcome to your dashboard built with TanStack Start, React Table, and DaisyUI.</p>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="stats shadow">
           <div className="stat">
@@ -25,7 +25,7 @@ function DashboardHome() {
             <div className="stat-desc">21% more than last month</div>
           </div>
         </div>
-        
+
         <div className="stats shadow">
           <div className="stat">
             <div className="stat-figure text-secondary">
@@ -38,7 +38,7 @@ function DashboardHome() {
             <div className="stat-desc">21% more than last month</div>
           </div>
         </div>
-        
+
         <div className="stats shadow">
           <div className="stat">
             <div className="stat-figure text-accent">
@@ -51,7 +51,7 @@ function DashboardHome() {
             <div className="stat-desc">↗︎ 90 (14%)</div>
           </div>
         </div>
-        
+
         <div className="stats shadow">
           <div className="stat">
             <div className="stat-figure text-info">
@@ -65,7 +65,7 @@ function DashboardHome() {
           </div>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
@@ -107,7 +107,7 @@ function DashboardHome() {
             </div>
           </div>
         </div>
-        
+
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Quick Actions</h2>

@@ -1,18 +1,9 @@
-import { useMemo, useReducer, useState } from 'react'
-
 import type {
   ColumnDef,
   GroupingState,
 } from '@tanstack/react-table'
-import {
-  flexRender,
-  getCoreRowModel,
-  getExpandedRowModel,
-  getFilteredRowModel,
-  getGroupedRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
+
+import type { Person } from '../utils/makeData'
 import {
   DeploymentUnitOutlined,
   DoubleLeftOutlined,
@@ -22,7 +13,16 @@ import {
   PlusCircleOutlined,
   RightOutlined,
 } from '@ant-design/icons'
-import type { Person } from '../utils/makeData'
+import {
+  flexRender,
+  getCoreRowModel,
+  getExpandedRowModel,
+  getFilteredRowModel,
+  getGroupedRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
+import { useMemo, useReducer, useState } from 'react'
 import { makeData } from '../utils/makeData'
 
 export function DataTable() {
@@ -112,7 +112,7 @@ export function DataTable() {
         <h1>Advanced Data Table</h1>
         <p>Interactive table with grouping, pagination, and real-time data manipulation.</p>
       </div>
-      
+
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
           <div className="overflow-x-auto">
@@ -214,7 +214,7 @@ export function DataTable() {
               </tbody>
             </table>
           </div>
-          
+
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-2">
               <button
@@ -246,7 +246,7 @@ export function DataTable() {
                 <DoubleRightOutlined />
               </button>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <div>Page</div>
               <strong>
@@ -257,7 +257,7 @@ export function DataTable() {
                 {table.getPageCount()}
               </strong>
             </div>
-            
+
             <div className="flex items-center gap-2">
               | Go to page:
               <input
@@ -272,7 +272,7 @@ export function DataTable() {
                 }}
               />
             </div>
-            
+
             <select
               className="select select-sm select-bordered w-32"
               value={table.getState().pagination.pageSize}
@@ -282,22 +282,26 @@ export function DataTable() {
             >
               {[10, 20, 30, 40, 50].map(pageSize => (
                 <option key={pageSize} value={pageSize}>
-                  Show {pageSize}
+                  Show
+                  {' '}
+                  {pageSize}
                 </option>
               ))}
             </select>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <div className="text-sm">
-              {table.getRowModel().rows.length} Rows
+              {table.getRowModel().rows.length}
+              {' '}
+              Rows
             </div>
             <div className="flex items-center gap-2">
               <button className="btn btn-sm btn-outline" onClick={() => rerender()}>Force Rerender</button>
               <button className="btn btn-sm btn-primary" onClick={() => refreshData()}>Refresh Data</button>
             </div>
           </div>
-          
+
           <div className="prose max-w-full">
             <details className="collapse collapse-arrow bg-base-200">
               <summary className="collapse-title text-lg font-medium">
