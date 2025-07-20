@@ -1,24 +1,29 @@
 import { Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import { themeChange } from 'theme-change'
 
 export function Header() {
-  const initialTheme = typeof window !== 'undefined' ? window.localStorage.getItem('theme') || 'light' : 'light'
-  const [theme, setTheme] = useState(initialTheme)
-
-  const handleThemeChange = () => {
+  const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
-      const currentTheme = window.localStorage.getItem('theme')
-      setTheme(currentTheme === 'dark' ? 'dark' : 'light')
+      return localStorage.getItem('theme') || 'light'
+    }
+    return 'light'
+  })
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark'
+    setTheme(newTheme)
+    
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme', newTheme)
+      document.documentElement.setAttribute('data-theme', newTheme)
     }
   }
 
   useEffect(() => {
-    themeChange(false)
-    return () => {
-      themeChange(false)
+    if (typeof window !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', theme)
     }
-  }, [])
+  }, [theme])
 
   return (
     <header className="navbar bg-base-100 border-b border-base-200 px-4">
@@ -50,8 +55,7 @@ export function Header() {
       </div>
       <div className="navbar-end">
         <button
-          data-toggle-theme="dark,light"
-          onClick={handleThemeChange}
+          onClick={toggleTheme}
           className="btn btn-ghost"
         >
           {theme === 'light' ? (
