@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "vite build 2>/dev/null",
+    "build:verbose": "vite build",
     "start": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
