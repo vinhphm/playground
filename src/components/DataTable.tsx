@@ -3,7 +3,7 @@ import type {
   GroupingState,
 } from '@tanstack/react-table'
 
-import type { Person } from '../utils/makeData'
+import type { User } from '../utils/api'
 import {
   DeploymentUnitOutlined,
   DoubleLeftOutlined,
@@ -11,6 +11,7 @@ import {
   LeftOutlined,
   MinusCircleOutlined,
   PlusCircleOutlined,
+  ReloadOutlined,
   RightOutlined,
 } from '@ant-design/icons'
 import {
@@ -23,62 +24,96 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useMemo, useReducer, useState } from 'react'
-import { makeData } from '../utils/makeData'
+import { useRefreshUsers, useUsers } from '../hooks/useUsers'
 
 export function DataTable() {
   const rerender = useReducer(() => ({}), {})[1]
+  const { data, isLoading, error } = useUsers()
+  const refreshMutation = useRefreshUsers()
 
-  const columns = useMemo<ColumnDef<Person>[]>(
+  const columns = useMemo<ColumnDef<User>[]>(
     () => [
       {
-        header: 'Name',
+        header: 'Personal Info',
         columns: [
           {
-            accessorKey: 'firstName',
-            header: 'First Name',
+            accessorKey: 'name',
+            header: 'Name',
             cell: info => info.getValue(),
-            getGroupingValue: row => `${row.firstName} ${row.lastName}`,
           },
           {
-            accessorFn: row => row.lastName,
-            id: 'lastName',
-            header: () => <span>Last Name</span>,
+            accessorKey: 'username',
+            header: 'Username',
+            cell: info => info.getValue(),
+          },
+          {
+            accessorKey: 'email',
+            header: 'Email',
+            cell: info => (
+              <a href={`mailto:${info.getValue()}`} className="link link-primary">
+                {info.getValue() as string}
+              </a>
+            ),
+          },
+        ],
+      },
+      {
+        header: 'Contact',
+        columns: [
+          {
+            accessorKey: 'phone',
+            header: 'Phone',
+            cell: info => info.getValue(),
+          },
+          {
+            accessorKey: 'website',
+            header: 'Website',
+            cell: info => (
+              <a href={`https://${info.getValue()}`} target="_blank" rel="noopener noreferrer" className="link link-secondary">
+                {info.getValue() as string}
+              </a>
+            ),
+          },
+        ],
+      },
+      {
+        header: 'Location',
+        columns: [
+          {
+            accessorKey: 'address.city',
+            header: 'City',
+            cell: info => info.getValue(),
+          },
+          {
+            accessorKey: 'address.street',
+            header: 'Street',
+            cell: info => info.getValue(),
+          },
+          {
+            accessorKey: 'address.zipcode',
+            header: 'Zipcode',
             cell: info => info.getValue(),
           },
         ],
       },
       {
-        header: 'Info',
+        header: 'Company',
         columns: [
           {
-            accessorKey: 'age',
-            header: () => 'Age',
-            aggregatedCell: ({ getValue }) =>
-              Math.round(getValue<number>() * 100) / 100,
-            aggregationFn: 'median',
+            accessorKey: 'company.name',
+            header: 'Company',
+            cell: info => info.getValue(),
           },
           {
-            header: 'More Info',
-            columns: [
-              {
-                accessorKey: 'visits',
-                header: () => <span>Visits</span>,
-                aggregationFn: 'sum',
-              },
-              {
-                accessorKey: 'status',
-                header: 'Status',
-              },
-              {
-                accessorKey: 'progress',
-                header: 'Profile Progress',
-                cell: ({ getValue }) =>
-                  `${Math.round(getValue<number>() * 100) / 100}%`,
-                aggregationFn: 'mean',
-                aggregatedCell: ({ getValue }) =>
-                  `${Math.round(getValue<number>() * 100) / 100}%`,
-              },
-            ],
+            accessorKey: 'company.catchPhrase',
+            header: 'Catch Phrase',
+            cell: info => (
+              <span className="italic text-sm">
+                "
+                {info.getValue() as string}
+                "
+              </span>
+            ),
           },
         ],
       },
@@ -86,13 +121,10 @@ export function DataTable() {
     [],
   )
 
-  const [data, setData] = useState(() => makeData(100000))
-  const refreshData = () => setData(() => makeData(100000))
-
   const [grouping, setGrouping] = useState<GroupingState>([])
 
   const table = useReactTable({
-    data,
+    data: data ?? [],
     columns,
     state: {
       grouping,
@@ -106,11 +138,57 @@ export function DataTable() {
     debugTable: true,
   })
 
+  const handleRefresh = () => {
+    refreshMutation.mutate()
+  }
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="prose max-w-none">
+          <h1>Users Data Table</h1>
+          <p>Loading user data from JSONPlaceholder API...</p>
+        </div>
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <div className="flex items-center justify-center h-64">
+              <span className="loading loading-spinner loading-lg"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="prose max-w-none">
+          <h1>Users Data Table</h1>
+          <p>Failed to load user data from API.</p>
+        </div>
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <div className="alert alert-error">
+              <span>
+                Error:
+                {error.message}
+              </span>
+              <button className="btn btn-sm" onClick={handleRefresh}>
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div className="prose max-w-none">
-        <h1>Advanced Data Table</h1>
-        <p>Interactive table with grouping, pagination, and real-time data manipulation.</p>
+        <h1>Users Data Table</h1>
+        <p>Interactive table with real user data from JSONPlaceholder API, featuring grouping and pagination.</p>
       </div>
 
       <div className="card bg-base-100 shadow-xl">
@@ -280,7 +358,7 @@ export function DataTable() {
                 table.setPageSize(Number(e.target.value))
               }}
             >
-              {[10, 20, 30, 40, 50].map(pageSize => (
+              {[5, 10, 20, 30, 40, 50].map(pageSize => (
                 <option key={pageSize} value={pageSize}>
                   Show
                   {' '}
@@ -298,7 +376,18 @@ export function DataTable() {
             </div>
             <div className="flex items-center gap-2">
               <button className="btn btn-sm btn-outline" onClick={() => rerender()}>Force Rerender</button>
-              <button className="btn btn-sm btn-primary" onClick={() => refreshData()}>Refresh Data</button>
+              <button
+                className="btn btn-sm btn-primary"
+                onClick={handleRefresh}
+                disabled={refreshMutation.isPending}
+              >
+                {refreshMutation.isPending ? (
+                  <span className="loading loading-spinner loading-xs"></span>
+                ) : (
+                  <ReloadOutlined />
+                )}
+                Refresh Data
+              </button>
             </div>
           </div>
 

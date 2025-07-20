@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { createContext, useContext, useState } from 'react'
 import { Footer } from '../components/Footer'
-import { Header } from '../components/Header'
 import { Sidebar } from '../components/Sidebar'
 
 interface SidebarContextType {
@@ -11,7 +10,7 @@ interface SidebarContextType {
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined)
 
-export const useSidebar = () => {
+export function useSidebar() {
   const context = useContext(SidebarContext)
   if (!context) {
     throw new Error('useSidebar must be used within a DashboardLayout')
@@ -36,8 +35,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <input id="drawer-toggle" type="checkbox" className="drawer-toggle" />
 
         <div className="drawer-content flex flex-col">
-          <Header />
-
           <main className="flex-1 p-6 bg-base-100">
             {children}
           </main>

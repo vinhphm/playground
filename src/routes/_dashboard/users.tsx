@@ -34,12 +34,8 @@ function UsersPage() {
                 <tr>
                   <td>
                     <div className="flex items-center gap-3">
-                      <div className="avatar">
-                        <div className="mask mask-squircle w-12 h-12">
-                          <div className="bg-neutral text-neutral-content flex items-center justify-center">
-                            JD
-                          </div>
-                        </div>
+                      <div className="w-12 h-12 bg-neutral text-neutral-content rounded-xl flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-medium">JD</span>
                       </div>
                       <div>
                         <div className="font-bold">John Doe</div>
@@ -64,12 +60,8 @@ function UsersPage() {
                 <tr>
                   <td>
                     <div className="flex items-center gap-3">
-                      <div className="avatar">
-                        <div className="mask mask-squircle w-12 h-12">
-                          <div className="bg-primary text-primary-content flex items-center justify-center">
-                            AS
-                          </div>
-                        </div>
+                      <div className="w-12 h-12 bg-primary text-primary-content rounded-xl flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-medium">AS</span>
                       </div>
                       <div>
                         <div className="font-bold">Alice Smith</div>
@@ -94,12 +86,8 @@ function UsersPage() {
                 <tr>
                   <td>
                     <div className="flex items-center gap-3">
-                      <div className="avatar">
-                        <div className="mask mask-squircle w-12 h-12">
-                          <div className="bg-accent text-accent-content flex items-center justify-center">
-                            BJ
-                          </div>
-                        </div>
+                      <div className="w-12 h-12 bg-accent text-accent-content rounded-xl flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-medium">BJ</span>
                       </div>
                       <div>
                         <div className="font-bold">Bob Johnson</div>

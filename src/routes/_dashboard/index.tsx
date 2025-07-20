@@ -72,10 +72,8 @@ function DashboardHome() {
             <h2 className="card-title">Recent Activity</h2>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="avatar placeholder">
-                  <div className="bg-neutral text-neutral-content rounded-full w-8">
-                    <span className="text-xs">JD</span>
-                  </div>
+                <div className="w-8 h-8 bg-neutral text-neutral-content rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="text-xs font-medium">JD</span>
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium">John Doe updated profile</p>
@@ -83,10 +81,8 @@ function DashboardHome() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="avatar placeholder">
-                  <div className="bg-primary text-primary-content rounded-full w-8">
-                    <span className="text-xs">AS</span>
-                  </div>
+                <div className="w-8 h-8 bg-primary text-primary-content rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="text-xs font-medium">AS</span>
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium">Alice Smith created new report</p>
@@ -94,10 +90,8 @@ function DashboardHome() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="avatar placeholder">
-                  <div className="bg-secondary text-secondary-content rounded-full w-8">
-                    <span className="text-xs">BJ</span>
-                  </div>
+                <div className="w-8 h-8 bg-secondary text-secondary-content rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="text-xs font-medium">BJ</span>
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium">Bob Johnson logged in</p>
