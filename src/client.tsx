@@ -5,4 +5,8 @@ import { createRouter } from './router'
 
 const router = createRouter()
 
-hydrateRoot(document.getElementById('root')!, <StartClient router={router} />)
+const rootElement = document.getElementById('root')
+if (!rootElement) {
+  throw new Error('Root element not found')
+}
+hydrateRoot(rootElement, <StartClient router={router} />)

@@ -1,7 +1,12 @@
-import type { ReactNode } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
+import {
+  createRootRoute,
+  HeadContent,
+  Outlet,
+  Scripts,
+} from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import type { ReactNode } from 'react'
 import '../index.css'
 
 const queryClient = new QueryClient({
@@ -15,11 +20,11 @@ const queryClient = new QueryClient({
 
 function NotFound() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-base-100">
+    <div className="flex min-h-screen items-center justify-center bg-base-100">
       <div className="text-center">
-        <h1 className="text-6xl font-bold text-error">404</h1>
-        <p className="text-xl text-base-content/70 mt-4">Page not found</p>
-        <a href="/" className="btn btn-primary mt-6">
+        <h1 className="font-bold text-6xl text-error">404</h1>
+        <p className="mt-4 text-base-content/70 text-xl">Page not found</p>
+        <a className="btn btn-primary mt-6" href="/">
           Go Home
         </a>
       </div>
@@ -59,7 +64,7 @@ function RootComponent() {
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html>
+    <html lang="en">
       <head>
         <HeadContent />
       </head>

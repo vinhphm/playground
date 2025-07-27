@@ -14,9 +14,11 @@ function UsersPage() {
 
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
-          <div className="flex justify-between items-center mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <h2 className="card-title">All Users</h2>
-            <button className="btn btn-primary">Add User</button>
+            <button className="btn btn-primary" type="button">
+              Add User
+            </button>
           </div>
 
           <div className="overflow-x-auto">
@@ -34,8 +36,8 @@ function UsersPage() {
                 <tr>
                   <td>
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-neutral text-neutral-content rounded-xl flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-medium">JD</span>
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-neutral text-neutral-content">
+                        <span className="font-medium text-sm">JD</span>
                       </div>
                       <div>
                         <div className="font-bold">John Doe</div>
@@ -52,16 +54,20 @@ function UsersPage() {
                   </td>
                   <td>
                     <div className="flex gap-2">
-                      <button className="btn btn-ghost btn-xs">Edit</button>
-                      <button className="btn btn-ghost btn-xs">Delete</button>
+                      <button className="btn btn-ghost btn-xs" type="button">
+                        Edit
+                      </button>
+                      <button className="btn btn-ghost btn-xs" type="button">
+                        Delete
+                      </button>
                     </div>
                   </td>
                 </tr>
                 <tr>
                   <td>
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-primary text-primary-content rounded-xl flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-medium">AS</span>
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary text-primary-content">
+                        <span className="font-medium text-sm">AS</span>
                       </div>
                       <div>
                         <div className="font-bold">Alice Smith</div>
@@ -78,16 +84,20 @@ function UsersPage() {
                   </td>
                   <td>
                     <div className="flex gap-2">
-                      <button className="btn btn-ghost btn-xs">Edit</button>
-                      <button className="btn btn-ghost btn-xs">Delete</button>
+                      <button className="btn btn-ghost btn-xs" type="button">
+                        Edit
+                      </button>
+                      <button className="btn btn-ghost btn-xs" type="button">
+                        Delete
+                      </button>
                     </div>
                   </td>
                 </tr>
                 <tr>
                   <td>
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-accent text-accent-content rounded-xl flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-medium">BJ</span>
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-accent text-accent-content">
+                        <span className="font-medium text-sm">BJ</span>
                       </div>
                       <div>
                         <div className="font-bold">Bob Johnson</div>
@@ -104,8 +114,12 @@ function UsersPage() {
                   </td>
                   <td>
                     <div className="flex gap-2">
-                      <button className="btn btn-ghost btn-xs">Edit</button>
-                      <button className="btn btn-ghost btn-xs">Delete</button>
+                      <button className="btn btn-ghost btn-xs" type="button">
+                        Edit
+                      </button>
+                      <button className="btn btn-ghost btn-xs" type="button">
+                        Delete
+                      </button>
                     </div>
                   </td>
                 </tr>

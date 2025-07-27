@@ -8,8 +8,9 @@
     "build": "vite build 2>/dev/null",
     "build:verbose": "vite build",
     "start": "vite preview",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "ultracite lint",
+    "lint:fix": "ultracite format",
+    "format": "ultracite format",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -26,23 +27,19 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.17.0",
+    "@biomejs/biome": "2.1.2",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/react-router-devtools": "^1.128.4",
     "@tanstack/router-vite-plugin": "^1.128.4",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
-    "@typescript-eslint/eslint-plugin": "^8.37.0",
-    "@typescript-eslint/parser": "^8.37.0",
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.21",
     "daisyui": "^5.0.46",
-    "eslint": "^9.31.0",
-    "eslint-plugin-format": "^1.0.1",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.3",
+    "ultracite": "5.1.1",
     "vite": "^7.0.5"
   }
 }

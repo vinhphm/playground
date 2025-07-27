@@ -12,11 +12,11 @@ function AnalyticsPage() {
         <p>Real-time analytics and insights for your application.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Traffic Overview</h2>
-            <div className="h-64 bg-base-200 rounded-lg flex items-center justify-center">
+            <div className="flex h-64 items-center justify-center rounded-lg bg-base-200">
               <p className="text-base-content/60">Chart placeholder</p>
             </div>
           </div>
@@ -25,7 +25,7 @@ function AnalyticsPage() {
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">User Engagement</h2>
-            <div className="h-64 bg-base-200 rounded-lg flex items-center justify-center">
+            <div className="flex h-64 items-center justify-center rounded-lg bg-base-200">
               <p className="text-base-content/60">Chart placeholder</p>
             </div>
           </div>
@@ -34,7 +34,7 @@ function AnalyticsPage() {
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Revenue Trends</h2>
-            <div className="h-64 bg-base-200 rounded-lg flex items-center justify-center">
+            <div className="flex h-64 items-center justify-center rounded-lg bg-base-200">
               <p className="text-base-content/60">Chart placeholder</p>
             </div>
           </div>
@@ -43,7 +43,7 @@ function AnalyticsPage() {
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Performance Metrics</h2>
-            <div className="h-64 bg-base-200 rounded-lg flex items-center justify-center">
+            <div className="flex h-64 items-center justify-center rounded-lg bg-base-200">
               <p className="text-base-content/60">Chart placeholder</p>
             </div>
           </div>

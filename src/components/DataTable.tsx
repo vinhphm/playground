@@ -1,9 +1,3 @@
-import type {
-  ColumnDef,
-  GroupingState,
-} from '@tanstack/react-table'
-
-import type { User } from '../utils/api'
 import {
   DeploymentUnitOutlined,
   DoubleLeftOutlined,
@@ -14,6 +8,7 @@ import {
   ReloadOutlined,
   RightOutlined,
 } from '@ant-design/icons'
+import type { ColumnDef, GroupingState } from '@tanstack/react-table'
 import {
   flexRender,
   getCoreRowModel,
@@ -25,6 +20,110 @@ import {
 } from '@tanstack/react-table'
 import { useMemo, useReducer, useState } from 'react'
 import { useRefreshUsers, useUsers } from '../hooks/useUsers'
+import type { User } from '../utils/api'
+
+// Helper function to get cell className
+function getCellClassName(cell: any) {
+  let baseClass = ''
+  if (cell.getIsGrouped()) {
+    baseClass = 'bg-success/20'
+  } else if (cell.getIsPlaceholder()) {
+    baseClass = 'bg-base-200'
+  }
+
+  const aggregatedClass = cell.getIsAggregated() ? 'font-bold' : ''
+  return `${baseClass} ${aggregatedClass}`.trim()
+}
+
+// Helper function to render cell content
+function renderCellContent(cell: any, row: any) {
+  if (cell.getIsGrouped()) {
+    return (
+      <button
+        className="btn btn-ghost btn-sm"
+        type="button"
+        {...{
+          onClick: row.getToggleExpandedHandler(),
+          style: {
+            cursor: row.getCanExpand() ? 'pointer' : 'normal',
+          },
+        }}
+      >
+        {row.getIsExpanded() ? <MinusCircleOutlined /> : <PlusCircleOutlined />}{' '}
+        {flexRender(cell.column.columnDef.cell, cell.getContext())} (
+        {row.subRows.length})
+      </button>
+    )
+  }
+
+  if (cell.getIsAggregated()) {
+    return flexRender(
+      cell.column.columnDef.aggregatedCell ?? cell.column.columnDef.cell,
+      cell.getContext()
+    )
+  }
+
+  if (cell.getIsPlaceholder()) {
+    return null
+  }
+
+  return flexRender(cell.column.columnDef.cell, cell.getContext())
+}
+
+// Helper function to render header content
+function renderHeaderContent(header: any) {
+  if (header.isPlaceholder) {
+    return null
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      {header.column.getCanGroup() ? (
+        <div
+          className="tooltip"
+          data-tip={header.column.getIsGrouped() ? 'Ungroup' : 'Group'}
+        >
+          <button
+            className="btn btn-ghost btn-sm"
+            type="button"
+            {...{
+              onClick: header.column.getToggleGroupingHandler(),
+              style: {
+                cursor: 'pointer',
+              },
+            }}
+          >
+            <DeploymentUnitOutlined
+              className={header.column.getIsGrouped() ? 'text-success' : ''}
+            />
+            {header.column.getIsGrouped()
+              ? `(${header.column.getGroupedIndex()}) `
+              : ''}
+          </button>
+        </div>
+      ) : null}{' '}
+      {flexRender(header.column.columnDef.header, header.getContext())}
+    </div>
+  )
+}
+
+// Helper function to render a single header cell
+function renderHeaderCell(header: any) {
+  return (
+    <th colSpan={header.colSpan} key={header.id}>
+      {renderHeaderContent(header)}
+    </th>
+  )
+}
+
+// Helper function to render a single data cell
+function renderDataCell(cell: any, row: any) {
+  return (
+    <td className={getCellClassName(cell)} key={cell.id}>
+      {renderCellContent(cell, row)}
+    </td>
+  )
+}
 
 export function DataTable() {
   const rerender = useReducer(() => ({}), {})[1]
@@ -39,18 +138,21 @@ export function DataTable() {
           {
             accessorKey: 'name',
             header: 'Name',
-            cell: info => info.getValue(),
+            cell: (info) => info.getValue(),
           },
           {
             accessorKey: 'username',
             header: 'Username',
-            cell: info => info.getValue(),
+            cell: (info) => info.getValue(),
           },
           {
             accessorKey: 'email',
             header: 'Email',
-            cell: info => (
-              <a href={`mailto:${info.getValue()}`} className="link link-primary">
+            cell: (info) => (
+              <a
+                className="link link-primary"
+                href={`mailto:${info.getValue()}`}
+              >
                 {info.getValue() as string}
               </a>
             ),
@@ -63,13 +165,18 @@ export function DataTable() {
           {
             accessorKey: 'phone',
             header: 'Phone',
-            cell: info => info.getValue(),
+            cell: (info) => info.getValue(),
           },
           {
             accessorKey: 'website',
             header: 'Website',
-            cell: info => (
-              <a href={`https://${info.getValue()}`} target="_blank" rel="noopener noreferrer" className="link link-secondary">
+            cell: (info) => (
+              <a
+                className="link link-secondary"
+                href={`https://${info.getValue()}`}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
                 {info.getValue() as string}
               </a>
             ),
@@ -82,17 +189,17 @@ export function DataTable() {
           {
             accessorKey: 'address.city',
             header: 'City',
-            cell: info => info.getValue(),
+            cell: (info) => info.getValue(),
           },
           {
             accessorKey: 'address.street',
             header: 'Street',
-            cell: info => info.getValue(),
+            cell: (info) => info.getValue(),
           },
           {
             accessorKey: 'address.zipcode',
             header: 'Zipcode',
-            cell: info => info.getValue(),
+            cell: (info) => info.getValue(),
           },
         ],
       },
@@ -102,23 +209,21 @@ export function DataTable() {
           {
             accessorKey: 'company.name',
             header: 'Company',
-            cell: info => info.getValue(),
+            cell: (info) => info.getValue(),
           },
           {
             accessorKey: 'company.catchPhrase',
             header: 'Catch Phrase',
-            cell: info => (
-              <span className="italic text-sm">
-                "
-                {info.getValue() as string}
-                "
+            cell: (info) => (
+              <span className="text-sm italic">
+                "{info.getValue() as string}"
               </span>
             ),
           },
         ],
       },
     ],
-    [],
+    []
   )
 
   const [grouping, setGrouping] = useState<GroupingState>([])
@@ -151,8 +256,8 @@ export function DataTable() {
         </div>
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
-            <div className="flex items-center justify-center h-64">
-              <span className="loading loading-spinner loading-lg"></span>
+            <div className="flex h-64 items-center justify-center">
+              <span className="loading loading-spinner loading-lg" />
             </div>
           </div>
         </div>
@@ -174,7 +279,11 @@ export function DataTable() {
                 Error:
                 {error.message}
               </span>
-              <button className="btn btn-sm" onClick={handleRefresh}>
+              <button
+                className="btn btn-sm"
+                onClick={handleRefresh}
+                type="button"
+              >
                 Try Again
               </button>
             </div>
@@ -188,7 +297,10 @@ export function DataTable() {
     <div className="space-y-6">
       <div className="prose max-w-none">
         <h1>Users Data Table</h1>
-        <p>Interactive table with real user data from JSONPlaceholder API, featuring grouping and pagination.</p>
+        <p>
+          Interactive table with real user data from JSONPlaceholder API,
+          featuring grouping and pagination.
+        </p>
       </div>
 
       <div className="card bg-base-100 shadow-xl">
@@ -196,44 +308,11 @@ export function DataTable() {
           <div className="overflow-x-auto">
             <table className="table">
               <thead>
-                {table.getHeaderGroups().map(headerGroup => (
+                {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <th key={header.id} colSpan={header.colSpan}>
-                          {header.isPlaceholder ? null : (
-                            <div className="flex items-center gap-2">
-                              {header.column.getCanGroup() ? (
-                                <div
-                                  className="tooltip"
-                                  data-tip={header.column.getIsGrouped() ? 'Ungroup' : 'Group'}
-                                >
-                                  <button
-                                    className="btn btn-ghost btn-sm"
-                                    {...{
-                                      onClick: header.column.getToggleGroupingHandler(),
-                                      style: {
-                                        cursor: 'pointer',
-                                      },
-                                    }}
-                                  >
-                                    <DeploymentUnitOutlined className={header.column.getIsGrouped() ? 'text-success' : ''} />
-                                    {header.column.getIsGrouped()
-                                      ? `(${header.column.getGroupedIndex()}) `
-                                      : ``}
-                                  </button>
-                                </div>
-                              ) : null}
-                              {' '}
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
-                            </div>
-                          )}
-                        </th>
-                      )
-                    })}
+                    {headerGroup.headers.map((header) =>
+                      renderHeaderCell(header)
+                    )}
                   </tr>
                 ))}
               </thead>
@@ -241,51 +320,9 @@ export function DataTable() {
                 {table.getRowModel().rows.map((row) => {
                   return (
                     <tr key={row.id}>
-                      {row.getVisibleCells().map((cell) => {
-                        return (
-                          <td
-                            key={cell.id}
-                            className={`${cell.getIsGrouped() ? 'bg-success/20' : cell.getIsPlaceholder() ? 'bg-base-200' : ''} ${cell.getIsAggregated() ? 'font-bold' : ''}`}
-                          >
-                            {cell.getIsGrouped() ? (
-                              <>
-                                <button
-                                  className="btn btn-ghost btn-sm"
-                                  {...{
-                                    onClick: row.getToggleExpandedHandler(),
-                                    style: {
-                                      cursor: row.getCanExpand()
-                                        ? 'pointer'
-                                        : 'normal',
-                                    },
-                                  }}
-                                >
-                                  {row.getIsExpanded() ? <MinusCircleOutlined /> : <PlusCircleOutlined />}
-                                  {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext(),
-                                  )}
-                                  {' '}
-                                  (
-                                  {row.subRows.length}
-                                  )
-                                </button>
-                              </>
-                            ) : cell.getIsAggregated() ? (
-                              flexRender(
-                                cell.column.columnDef.aggregatedCell
-                                ?? cell.column.columnDef.cell,
-                                cell.getContext(),
-                              )
-                            ) : cell.getIsPlaceholder() ? null : (
-                              flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext(),
-                              )
-                            )}
-                          </td>
-                        )
-                      })}
+                      {row
+                        .getVisibleCells()
+                        .map((cell) => renderDataCell(cell, row))}
                     </tr>
                   )
                 })}
@@ -297,29 +334,33 @@ export function DataTable() {
             <div className="flex items-center gap-2">
               <button
                 className="btn btn-sm"
-                onClick={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage()}
+                onClick={() => table.setPageIndex(0)}
+                type="button"
               >
                 <DoubleLeftOutlined />
               </button>
               <button
                 className="btn btn-sm"
-                onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
+                onClick={() => table.previousPage()}
+                type="button"
               >
                 <LeftOutlined />
               </button>
               <button
                 className="btn btn-sm"
-                onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
+                onClick={() => table.nextPage()}
+                type="button"
               >
                 <RightOutlined />
               </button>
               <button
                 className="btn btn-sm"
-                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                 disabled={!table.getCanNextPage()}
+                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                type="button"
               >
                 <DoubleRightOutlined />
               </button>
@@ -328,10 +369,7 @@ export function DataTable() {
             <div className="flex items-center gap-2">
               <div>Page</div>
               <strong>
-                {table.getState().pagination.pageIndex + 1}
-                {' '}
-                of
-                {' '}
+                {table.getState().pagination.pageIndex + 1} of{' '}
                 {table.getPageCount()}
               </strong>
             </div>
@@ -340,29 +378,27 @@ export function DataTable() {
               | Go to page:
               <input
                 className="input input-bordered input-sm w-20"
-                type="number"
-                min="1"
-                max={table.getPageCount()}
                 defaultValue={table.getState().pagination.pageIndex + 1}
+                max={table.getPageCount()}
+                min="1"
                 onChange={(e) => {
                   const page = e.target.value ? Number(e.target.value) - 1 : 0
                   table.setPageIndex(page)
                 }}
+                type="number"
               />
             </div>
 
             <select
               className="select select-sm select-bordered w-32"
-              value={table.getState().pagination.pageSize}
               onChange={(e) => {
                 table.setPageSize(Number(e.target.value))
               }}
+              value={table.getState().pagination.pageSize}
             >
-              {[5, 10, 20, 30, 40, 50].map(pageSize => (
+              {[5, 10, 20, 30, 40, 50].map((pageSize) => (
                 <option key={pageSize} value={pageSize}>
-                  Show
-                  {' '}
-                  {pageSize}
+                  Show {pageSize}
                 </option>
               ))}
             </select>
@@ -370,19 +406,24 @@ export function DataTable() {
 
           <div className="flex items-center gap-4">
             <div className="text-sm">
-              {table.getRowModel().rows.length}
-              {' '}
-              Rows
+              {table.getRowModel().rows.length} Rows
             </div>
             <div className="flex items-center gap-2">
-              <button className="btn btn-sm btn-outline" onClick={() => rerender()}>Force Rerender</button>
+              <button
+                className="btn btn-sm btn-outline"
+                onClick={() => rerender()}
+                type="button"
+              >
+                Force Rerender
+              </button>
               <button
                 className="btn btn-sm btn-primary"
-                onClick={handleRefresh}
                 disabled={refreshMutation.isPending}
+                onClick={handleRefresh}
+                type="button"
               >
                 {refreshMutation.isPending ? (
-                  <span className="loading loading-spinner loading-xs"></span>
+                  <span className="loading loading-spinner loading-xs" />
                 ) : (
                   <ReloadOutlined />
                 )}
@@ -392,12 +433,14 @@ export function DataTable() {
           </div>
 
           <div className="prose max-w-full">
-            <details className="collapse collapse-arrow bg-base-200">
-              <summary className="collapse-title text-lg font-medium">
+            <details className="collapse-arrow collapse bg-base-200">
+              <summary className="collapse-title font-medium text-lg">
                 Current Grouping State
               </summary>
               <div className="collapse-content">
-                <pre className="text-sm">{JSON.stringify(grouping, null, 2)}</pre>
+                <pre className="text-sm">
+                  {JSON.stringify(grouping, null, 2)}
+                </pre>
               </div>
             </details>
           </div>

@@ -26,18 +26,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   const toggleCollapse = () => {
-    setIsCollapsed(prev => !prev)
+    setIsCollapsed((prev) => !prev)
   }
 
   return (
     <SidebarContext.Provider value={{ isCollapsed, toggleCollapse }}>
       <div className="drawer lg:drawer-open">
-        <input id="drawer-toggle" type="checkbox" className="drawer-toggle" />
+        <input className="drawer-toggle" id="drawer-toggle" type="checkbox" />
 
         <div className="drawer-content flex flex-col">
-          <main className="flex-1 p-6 bg-base-100">
-            {children}
-          </main>
+          <main className="flex-1 bg-base-100 p-6">{children}</main>
 
           <Footer />
         </div>
