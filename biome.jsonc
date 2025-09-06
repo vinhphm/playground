@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.3/schema.json",
   "extends": ["ultracite"],
   "files": {
     "ignoreUnknown": true,
@@ -7,23 +7,23 @@
   },
   "javascript": {
     "formatter": {
-      "semicolons": "asNeeded"
+      "semicolons": "asNeeded",
+      "quoteStyle": "single"
     }
   },
   "linter": {
     "rules": {
       "style": {
         "noHeadElement": "off",
-        "useFilenamingConvention": "off"
-      },
-      "nursery": {
-        "noUnknownAtRule": "off"
+        "useFilenamingConvention": "off",
+        "noMagicNumbers": "off"
       },
       "correctness": {
         "noUnknownProperty": "off"
       },
       "suspicious": {
-        "noExplicitAny": "off"
+        "noExplicitAny": "off",
+        "noUnknownAtRules": "off"
       }
     }
   }

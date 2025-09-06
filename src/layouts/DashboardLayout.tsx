@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from 'react'
 import { Footer } from '../components/Footer'
 import { Sidebar } from '../components/Sidebar'
 
-interface SidebarContextType {
+type SidebarContextType = {
   isCollapsed: boolean
   toggleCollapse: () => void
 }
@@ -18,7 +18,7 @@ export function useSidebar() {
   return context
 }
 
-interface DashboardLayoutProps {
+type DashboardLayoutProps = {
   children: ReactNode
 }
 
